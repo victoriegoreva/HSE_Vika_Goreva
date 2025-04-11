@@ -1,0 +1,23 @@
+def main():
+    participants = []
+
+    for i in range(3):
+        print(f"Введите данные для участника #{i + 1}:")
+        name = input("Наименование: ")
+        status = input("Статус (Истец, Ответчик, Третье лицо): ")
+        inn = input("ИНН: ")
+        
+        participant = {
+            "name": name,
+            "status": status,
+            "inn": inn
+        }
+        
+        participants.append(participant)
+
+    print("\nПолученные данные:")
+    for participant in participants:
+        print(participant)
+
+if __name__ == "__main__":
+    main()

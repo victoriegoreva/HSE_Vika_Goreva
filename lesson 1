@@ -1,0 +1,60 @@
+# Задание 1: Работа с переменными, ввод и вывод данных, наблюдение за id объектов
+# Создаём несколько переменных и выводим их на экран
+name = "Алексей"
+age = 25
+height = 1.75
+
+print("Имя:", name)
+print("Возраст:", age)
+print("Рост:", height)
+
+# Запросим у пользователя данные
+user_name = input("Введите ваше имя: ")
+user_age = input("Введите ваш возраст: ")
+
+# Выводим введенные данные
+print("Ваше имя:", user_name)
+print("Ваш возраст:", user_age)
+
+# Наблюдаем за id объектов
+print("id(name):", id(name))
+print("id(age):", id(age))
+print("id(height):", id(height))
+print("id(user_name):", id(user_name))
+print("id(user_age):", id(user_age))
+
+
+# Задание 2: Перевод времени в часы, минуты и секунды
+# Пользователь вводит время в секундах
+seconds_input = input("Введите время в секундах: ")
+
+# Проверка на наличие только числовых данных
+if seconds_input.isdigit():
+    total_seconds = int(seconds_input)
+    hours = total_seconds // 3600
+    minutes = (total_seconds % 3600) // 60
+    seconds = total_seconds % 60
+
+    # Выводим часы, минуты и секунды
+    print("Часы:", hours)
+    print("Минуты:", minutes)
+    print("Секунды:", seconds)
+else:
+    print("Ошибка: Введите только числовое значение.")
+
+
+# Задание 3: Сумма чисел n + nn + nnn
+# Запрашиваем у пользователя число n
+n_input = input("Введите число от 1 до 9: ")
+
+# Проверка на корректность ввода
+if n_input.isdigit() and 1 <= int(n_input) <= 9:
+    n = int(n_input)
+    nn = n * 11  # n + n
+    nnn = n * 111  # n + n + n
+    result = n + nn + nnn
+
+    # Выводим результат
+    print(f"Результат: {n} + {nn} + {nnn} = {result}")
+else:
+    print("Ошибка: Введите корректное число от 1 до 9.")

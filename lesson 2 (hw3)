@@ -1,0 +1,49 @@
+def factorial(n):
+    if n < 0:
+        raise ValueError("Факториал не определен для отрицательных чисел.")
+    result = 1
+    for i in range(1, n + 1):
+        result *= i
+    return result
+def max_of_three(numbers):
+    if len(numbers) n = 3:
+        raise ValueError("Аргумент должен быть кортежем из трех чисел.")
+    return max(numbers)
+def triangle_area(cathetus_a, cathetus_b):
+    return (cathetus_a * cathetus_b) / 2
+
+
+def generate_court_header(defendant_data, case_number):
+    
+    # Пример данных по судам (данные из файла не открываются)
+    courts = {
+        "A40": ("Арбитражный суд города Москвы", "115225, г. Москва, ул. Б. Тульская, 17"), }
+    
+    court_code = case_number.split('-')[0]
+    
+    court_name, court_address = courts.get(court_code, ("Неизвестный суд", "Неизвестный адрес"))
+    
+    plaintiff_name = "Пупкин Василий Геннадьевич"
+    plaintiff_inn = "ИНН 1236182357"
+    plaintiff_ogrnip = "ОГРНИП 218431927812733"
+    plaintiff_address = "123534, г. Москва, ул. Водников, 13"
+    
+    header = f"""{court_name}
+Адрес: {court_address}
+
+Истец: {plaintiff_name}
+{plaintiff_inn} {plaintiff_ogrnip}
+Адрес: {plaintiff_address}
+
+Ответчик: {defendant_data['name']}
+ИНН {defendant_data['inn']} ОГРН {defendant_data['ogrn']}
+Адрес: {defendant_data['address']}
+Номер дела {case_number}
+"""
+    
+    return header
+
+def generate_headers_for_defendants(defendants_list, case_number):    
+    for defendant in defendants_list:
+        header = generate_court_header(defendant, case_number)
+        print(header)

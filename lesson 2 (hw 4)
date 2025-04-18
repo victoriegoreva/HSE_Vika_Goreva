@@ -1,0 +1,51 @@
+def validate_inn(inn):
+
+    inn = str(inn).strip()  
+    if not inn.isdigit():
+        return False  
+
+    if len(inn) == 10:
+        return validate_organization_inn(inn)
+    elif len(inn) == 12:
+        return validate_individual_inn(inn)
+    else:
+        return False  
+
+def validate_organization_inn(inn):
+
+    weights = [2, 4, 10, 3, 5, 9, 4, 6, 8]
+    
+
+    control_sum = sum(int(inn[i]) * weights[i] for i in range(9))
+    
+
+    control_number = control_sum % 11
+    if control_number > 9:
+        control_number %= 10
+    
+
+    return control_number == int(inn[9])
+
+def validate_individual_inn(inn):
+
+    weights_first = [7, 2, 4, 10, 3, 5, 9, 4, 6, 8]
+    weights_second = [3, 7, 2, 4, 10, 3, 5, 9, 4, 6, 8]
+    
+
+    control_sum_first = sum(int(inn[i]) * weights_first[i] for i in range(10))
+    control_number_first = control_sum_first % 11
+    if control_number_first > 9:
+        control_number_first %= 10
+    
+
+    if control_number_first != int(inn[10]):
+        return False
+    
+
+    control_sum_second = sum(int(inn[i]) * weights_second[i] for i in range(11))
+    control_number_second = control_sum_second % 11
+    if control_number_second > 9:
+        control_number_second %= 10
+    
+
+    return control_number_second == int(inn[11])

@@ -1,0 +1,75 @@
+import requests
+import csv
+
+inn_list = [
+    "7702758341",
+    "7802654025",
+    "5027217264",
+    "6324042940",
+    "5834031870",
+    "1657061756",
+    "3665044042",
+    "6453102410"
+]
+
+url = 'https://disk.yandex.ru/d/L9AlFKKsFxvVSw'
+response = requests.get(url)
+with open('traders.txt', 'wb') as f:
+    f.write(response.content)
+
+traders_info = []
+with open('traders.txt', 'r', encoding='utf-8') as file:
+    for line in file:
+        for inn in inn_list:
+            if inn in line:
+                parts = line.strip().split(',')
+                if len(parts) >= 3: 
+                    traders_info.append({
+                        'ИНН': parts[0],
+                        'ОГРН': parts[1],
+                        'Адрес': parts[2]
+                    })
+with open('traders.csv', 'w', newline='', encoding='utf-8') as csvfile:
+    fieldnames = ['ИНН', 'ОГРН', 'Адрес']
+    writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+    
+    writer.writeheader()
+    for trader in traders_info:
+        writer.writerow(trader)
+
+print("Данные сохранены в traders.csv")
+
+
+import re
+
+def find_emails(text):
+    email_pattern = r'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}'
+    emails = re.findall(email_pattern, text)
+    return list(set(emails))  
+
+import json
+
+url_bankruptcy_data = 'https://disk.yandex.ru/d/LDo72BFvgpU-Pw'
+response_bankruptcy = requests.get(url_bankruptcy_data)
+with open('bankruptcy_data.txt', 'wb') as f:
+    f.write(response_bankruptcy.content)
+
+emails_dict = {}
+
+with open('bankruptcy_data.txt', 'r', encoding='utf-8') as file:
+    for line in file:
+        parts = line.strip().split(',')
+        if len(parts) >= 2: 
+            publisher_inn = parts[0]
+            message_text = ','.join(parts[1:])
+            
+            found_emails = find_emails(message_text)
+            if found_emails:
+                if publisher_inn not in emails_dict:
+                    emails_dict[publisher_inn] = set()
+                emails_dict[publisher_inn].update(found_emails)
+
+with open('emails.json', 'w', encoding='utf-8') as jsonfile:
+    json.dump(emails_dict, jsonfile, ensure_ascii=False, indent=4)
+
+print("Email адреса сохранены в emails.json")

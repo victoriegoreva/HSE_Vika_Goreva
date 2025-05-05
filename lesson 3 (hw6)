@@ -1,0 +1,29 @@
+import requests
+import json
+from ics import Calendar
+
+ics_url = 'https://kad.arbitr.ru/Card/5fbea45a-9f9a-4d8e-b489-fbfa221361c3'
+
+response = requests.get(ics_url)
+with open('court_schedule.ics', 'wb') as f:
+    f.write(response.content)
+
+with open('court_schedule.ics', 'r', encoding='utf-8') as f:
+    calendar = Calendar(f.read())
+
+court_dates = []
+
+for event in calendar.events:
+    if event.begin.year > 1 and event.location:
+        court_dates.append({
+            "case_number": "А40-183194/2015",
+            "start": event.begin.isoformat(),
+            "end": event.end.isoformat(),
+            "location": event.location,
+            "description": event.description.replace('\n', ' ')
+        })
+
+with open('court_dates.json', 'w', encoding='utf-8') as jsonfile:
+    json.dump(court_dates, jsonfile, ensure_ascii=False, indent=4)
+
+print("Данные о судебных заседаниях сохранены в court_dates.json")

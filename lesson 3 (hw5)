@@ -73,3 +73,5 @@ with open('emails.json', 'w', encoding='utf-8') as jsonfile:
     json.dump(emails_dict, jsonfile, ensure_ascii=False, indent=4)
 
 print("Email адреса сохранены в emails.json")
+
+#проверка

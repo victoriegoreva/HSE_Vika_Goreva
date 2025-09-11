@@ -1,1 +1,38 @@
+class CourtCase:
+    def __init__(self, case_number, judge, case_type):
+        self.case_number = case_number               
+        self.case_participants = []                 
+        self.judge = judge                        
+        self.case_type = case_type                  
+        self.hearings_scheduled = []               
+        self.is_decided = False                    
+        self.verdict = ""                          
+        self.case_status = "На рассмотрении"   
+    
+    def add_participant(self, participant_name):
+        if participant_name not in self.case_participants:
+            self.case_participants.append(participant_name)
+    
+    def remove_participant(self, participant_name):
+        if participant_name in self.case_participants:
+            self.case_participants.remove(participant_name)
+    
+    def schedule_hearing(self, datetime_info):
+        self.hearings_scheduled.append(datetime_info)
+    
+    def make_decision(self, verdict_text):
+        self.verdict = verdict_text
+        self.is_decided = True
+        self.case_status = "Закрыто"
 
+    def get_case_info(self):
+        return {
+            "номер дела": self.case_number,
+            "тип дела": self.case_type,
+            "участники": self.case_participants,
+            "судья": self.judge,
+            "заседания": self.hearings_scheduled,
+            "статус": self.case_status,
+            "вердикт": self.verdict,
+            "завершено": self.is_decided
+        }

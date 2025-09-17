@@ -1,0 +1,28 @@
+import random
+
+array_int = [random.randint(0, 1_000_000) for _ in range(100_000)]
+
+array_dicts = [
+    {
+        "num_1": random.randint(1, 1_000_000),
+        "num_2": random.randint(1, 1_000_000)
+    }
+    for _ in range(100_000)
+]
+
+def bubble_sort(arr):
+    n = len(arr)
+    for i in range(n):
+        swapped = False
+        for j in range(0, n - i - 1):
+            if arr[j] > arr[j + 1]:
+                arr[j], arr[j + 1] = arr[j + 1], arr[j]
+                swapped = True
+        if not swapped:
+            break
+
+array_dicts.sort(key=lambda x: (x["num_1"], x["num_2"]))
+
+print("Первые 5 элементов массива словарей после сортировки:")
+for d in array_dicts[:5]:
+    print(d)

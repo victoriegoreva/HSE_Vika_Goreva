@@ -1,0 +1,93 @@
+import requests
+
+class LegalAPI:
+    BASE_URL = "https://legal-api.sirotinsky.com/"
+
+    def __init__(self, token: str):
+        """
+        Инициализация клиента API с токеном авторизации.
+
+        :param token: Токен для авторизации в API
+        """
+        self.token = token
+        self.headers = {
+            "Authorization": f"Bearer {self.token}",
+            "Content-Type": "application/json"
+        }
+
+    def _get(self, endpoint: str, params=None):
+        """
+        Внутренний метод для выполнения GET-запроса.
+
+        :param endpoint: Путь API после базового URL
+        :param params: Параметры запроса
+        :return: Ответ API в формате JSON или None при ошибке
+        """
+        url = self.BASE_URL + endpoint
+        response = requests.get(url, headers=self.headers, params=params)
+
+        if response.status_code == 200:
+            return response.json()
+        else:
+            raise Exception(f"API request failed: {response.status_code} {response.text}")
+
+    def search_organization(self, query: str):
+        """
+        Поиск организации в ЕФРСБ по строке запроса.
+
+        :param query: Текст запроса для поиска организации
+        :return: Результаты поиска (список организаций)
+        """
+        params = {"query": query}
+        return self._get("efrsb/organization/search", params=params)
+
+    def get_organization_by_inn(self, inn: str):
+        """
+        Получение данных организации по ИНН.
+
+        :param inn: ИНН организации
+        :return: Данные организации
+        """
+        return self._get(f"efrsb/organization/{inn}")
+
+    def get_court_cases(self, inn: str, limit: int = 10):
+        """
+        Получение списка судебных дел, связанных с организацией по ИНН.
+
+        :param inn: ИНН организации
+        :param limit: Количество дел для получения
+        :return: Список судебных дел
+        """
+        params = {"limit": limit}
+        return self._get(f"efrsb/organization/{inn}/court-cases", params=params)
+
+    def get_licenses(self, inn: str):
+        """
+        Получение списка лицензий организации по ИНН.
+
+        :param inn: ИНН организации
+        :return: Список лицензий
+        """
+        return self._get(f"efrsb/organization/{inn}/licenses")
+
+
+if __name__ == "__main__":
+    token = "4123saedfasedfsadf4324234f223ddf23"
+    api = LegalAPI(token)
+
+    try:
+        orgs = api.search_organization("Газпром")
+        print("Результаты поиска организаций:", orgs)
+
+        inn = "7707083893"
+        org_data = api.get_organization_by_inn(inn)
+        print("Данные организации:", org_data)
+
+        court_cases = api.get_court_cases(inn, limit=5)
+        print("Судебные дела:", court_cases)
+
+        licenses = api.get_licenses(inn)
+        print("Лицензии:", licenses)
+
+    except Exception as e:
+        print("Ошибка при запросе к API:", e)

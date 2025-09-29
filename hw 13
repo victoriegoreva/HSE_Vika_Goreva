@@ -1,0 +1,58 @@
+import os
+import requests
+import pandas as pd
+from datetime import datetime
+
+class ParserCBRF:
+    def __init__(self):
+        self._url = 'https://www.cbr.ru/Collection/Collection/File/40564/Key_rate.xlsx'
+        self._filename = 'key_rate_cbrf.xlsx'
+        self.data = {}
+
+    def start(self):
+        self._download_file()
+        self._parse_file()
+        return self.data
+
+    def _download_file(self):
+        if os.path.exists(self._filename):
+            return
+        print(f'Скачиваем файл ключевой ставки с ЦБ РФ...')
+        r = requests.get(self._url)
+        r.raise_for_status()
+        with open(self._filename, 'wb') as f:
+            f.write(r.content)
+        print(f'Файл сохранён: {self._filename}')
+
+    def _parse_file(self):
+        print('Парсим Excel файл...')
+        df = pd.read_excel(self._filename, sheet_name=0)
+        
+        df.columns = df.columns.str.strip()  # убираем пробелы
+        if 'Дата' not in df.columns or 'Ставка, %' not in df.columns:
+            raise ValueError('Не найдены ожидаемые столбцы в файле Excel.')
+
+
+        for index, row in df.iterrows():
+            date = row['Дата']
+            rate = row['Ставка, %']
+            if pd.isna(date) or pd.isna(rate):
+                continue
+            if isinstance(date, datetime):
+                date_str = date.strftime('%Y-%m-%d')
+            else:
+                date_str = str(date)
+            try:
+                rate_float = float(rate)
+            except ValueError:
+                continue
+            self.data[date_str] = rate_float
+        print('Парсинг завершён.')
+
+if __name__ == '__main__':
+    parser = ParserCBRF()
+    result = parser.start()
+    print(f'Получено {len(result)} записей ключевой ставки.')
+
+    for k, v in list(result.items())[:5]:
+        print(f'{k}: {v}%')

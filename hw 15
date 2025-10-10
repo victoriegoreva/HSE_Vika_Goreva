@@ -4,7 +4,7 @@ import sqlite3
 from telegram import ReplyKeyboardMarkup, ReplyKeyboardRemove
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, ConversationHandler
 
-TOKEN = '8325093748:A*G3npmCNcb4APIS4wGk9gqmTGNBHc39NWM'
+TOKEN = '83250*3748:A*G3npmCNcb4APIS4wGk9gqmTGNBHc39NWM'
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

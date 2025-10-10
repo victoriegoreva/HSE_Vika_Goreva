@@ -1,0 +1,97 @@
+python
+import logging
+import sqlite3
+from telegram import ReplyKeyboardMarkup, ReplyKeyboardRemove
+from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, ConversationHandler
+
+TOKEN = '8325093748:AAG3npmCNcb4APIS4wGk9gqmTGNBHc39NWM'
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+
+Q1, Q2, Q3 = range(3)
+
+conn = sqlite3.connect('survey.db')
+cursor = conn.cursor()
+
+
+cursor.execute('''
+CREATE TABLE IF NOT EXISTS answers (
+    user_id INTEGER PRIMARY KEY,
+    name TEXT,
+    age INTEGER,
+    favorite_color TEXT
+)
+''')
+conn.commit()
+
+def start(update, context):
+    update.message.reply_text(
+        "Здравствуйте! Я помогу вам пройти краткую анкету.\n"
+        "Для начала, скажите, пожалуйста, ваше имя."
+    )
+    context.user_data.clear()
+    return Q1
+
+def ask_name(update, context):
+    user_id = update.message.from_user.id
+    name = update.message.text
+    context.user_data['name'] = name
+    update.message.reply_text('Спасибо, ' + name + '! А ваш возраст?')
+    return Q2
+
+def ask_age(update, context):
+    age_text = update.message.text
+    if not age_text.isdigit():
+        update.message.reply_text('Пожалуйста, введите числовой возраст.')
+        return Q2
+    context.user_data['age'] = int(age_text)
+    update.message.reply_text('Какой ваш любимый цвет?')
+    return Q3
+
+def ask_color(update, context):
+    color = update.message.text
+    context.user_data['favorite_color'] = color
+
+    user_id = update.message.from_user.id
+    cursor.execute('''
+        INSERT OR REPLACE INTO answers (user_id, name, age, favorite_color)
+        VALUES (?, ?, ?, ?)
+    ''', (
+        user_id,
+        context.user_data['name'],
+        context.user_data['age'],
+        context.user_data['favorite_color']
+    ))
+    conn.commit()
+
+    update.message.reply_text('Спасибо за ответы! Ваша анкета сохранена.',
+                              reply_markup=ReplyKeyboardRemove())
+    return ConversationHandler.END
+
+def cancel(update, context):
+    update.message.reply_text('Процедура анкетирования прервана.', reply_markup=ReplyKeyboardRemove())
+    return ConversationHandler.END
+
+def main():
+    updater = Updater(TOKEN)
+    dispatcher = updater.dispatcher
+
+    conv_handler = ConversationHandler(
+        entry_points=[CommandHandler('start', start)],
+        states={
+            Q1: [MessageHandler(Filters.text & ~Filters.command, ask_name)],
+            Q2: [MessageHandler(Filters.text & ~Filters.command, ask_age)],
+            Q3: [MessageHandler(Filters.text & ~Filters.command, ask_color)],
+        },
+        fallbacks=[CommandHandler('cancel', cancel)]
+    )
+
+    dispatcher.add_handler(conv_handler)
+
+    updater.start_polling()
+    updater.idle()
+
+if __name__ == '__main__':
+    main()

@@ -1,0 +1,51 @@
+python
+from telegram import ReplyKeyboardMarkup, KeyboardButton
+from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, ConversationHandler
+
+TOKEN = '7605508*80:AAFjVwiET-ZTfH9yju75ifkuHuKvQQFDM4o'
+
+def start(update, context):
+    main_menu = [
+        [KeyboardButton("Общие сведения")],
+        [KeyboardButton("Контакты")],
+        [KeyboardButton("Дополнительная информация")]
+    ]
+    reply_markup = ReplyKeyboardMarkup(main_menu, resize_keyboard=True)
+    update.message.reply_text(
+        "Добро пожаловать в справочник. Выберите раздел:",
+        reply_markup=reply_markup
+    )
+
+def handle_choice(update, context):
+    text = update.message.text
+    if text == "Общие сведения":
+        reply = "Это раздел 'Общие сведения'.\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit."
+    elif text == "Контакты":
+        reply = "Это раздел 'Контакты'.\n\nНаш телефон: +123456789\nEmail: info@example.com"
+    elif text == "Дополнительная информация":
+        reply = "Это раздел 'Дополнительная информация'.\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit."
+    else:
+        reply = "Пожалуйста, используйте меню для навигации."
+    
+    back_button = [[KeyboardButton("В главное меню")]]
+    reply_markup = ReplyKeyboardMarkup(back_button, resize_keyboard=True)
+    update.message.reply_text(reply, reply_markup=reply_markup)
+
+def main_menu(update, context):
+    if update.message.text == "В главное меню":
+        start(update, context)
+
+def main():
+    updater = Updater(TOKEN)
+    dispatcher = updater.dispatcher
+
+    dispatcher.add_handler(CommandHandler('start', start))
+
+    dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, handle_choice))
+    dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, main_menu))
+
+    updater.start_polling()
+    updater.idle()
+
+if __name__ == '__main__':
+    main()

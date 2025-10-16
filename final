@@ -1,0 +1,89 @@
+def fib(n): 
+  #проверка корреектности входного параметра
+  if n <= 0:
+    return []
+  #создание списка для хранения последовательности
+  sequence = []
+    
+  a, b = 0, 1
+    
+  for _ in range(n):
+    sequence.append(a)
+    a, b = b, a + b
+    
+  return sequence
+
+#Пример использования:
+print(fib(10)) 
+
+
+
+def fib_generator(n): 
+ #провеерка кореектности входного парамеетра
+  if n <= 0:
+    return
+    
+  a, b = 0, 1
+    
+  for _ in range(n):
+    yield a
+    a, b = b, a + b
+
+for number in fib_generator(10):
+  print(number)
+
+
+
+def roman_to_int(s: str) -> int:
+  #создание словаря соовтетствия римских символов и их значеений
+  roman_values = {
+    'I': 1,
+    'V': 5,
+    'X': 10,
+    'L': 50,
+    'C': 100,
+    'D': 500,
+    'M': 1000
+}
+  #инициализируем итоговую сумму
+  total = 0
+
+
+  for i in range(len(s)):
+  #теекущее значение
+    current_value = roman_values[s[i]]
+
+  #если след символ больше текущего, вычитаем текущее значение
+    if i + 1 < len(s) and roman_values[s[i + 1]] > current_value:
+      total -= current_value
+    else:
+      total += current_value
+
+  return total
+
+print(roman_to_int("III")) #Вывод: 3
+print(roman_to_int("LVIII")) #Вывод: 58
+print(roman_to_int("MCMXCIV")) #Вывод: 1994
+
+
+
+def is_monotonic(nums):
+  #является ли послеедовательность неубывающей
+  increasing = True
+  #является ли послеедовательность возрастающей
+  decreasing = True
+
+
+  for i in range(len(nums) - 1):
+    if nums[i] > nums[i + 1]:
+      increasing = False
+    if nums[i] < nums[i + 1]:
+      decreasing = False
+
+  #возвращаем тру, если последоват-ь либо нееубыв, либо возраст
+  return increasing or decreasing
+
+#Тестовые примеры
+print(is_monotonic([1, 2, 2, 3])) # True
+print(is_monotonic([6, 5, 4, 4])) # True
+print(is_monotonic([1, 3, 2])) # False
